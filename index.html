@@ -30,14 +30,14 @@
 <input type="file" id="fileInput">
 <input id="questionInput" type="text" placeholder="Ask your question here ">
 
-<button id="sendButton">Send <i class="fa fa-microphone"></i></button>
+<button id="sendButton">Send <i></i></button>
 <div id="output"></div>
 <button id="copyButton">Copy</button>
 <a href="https://github.com/sankeer28/Gemini-Homework-Helper" target="_blank" class="github-link">GitHub</a>
 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-link">Need API Key?</a>
 
 <script type="module">
-
+    document.getElementById('sendButton').style.display = 'none';
   document.getElementById('copyButton').addEventListener('click', () => {
     const outputElement = document.getElementById('output');
     const textToCopy = outputElement.innerText;
@@ -120,23 +120,85 @@ function playAudio(text) {
   window.speechSynthesis.speak(utterance);
 }
 
-// Event listener for the send button
 document.getElementById('sendButton').addEventListener('click', async () => {
-  const prompt = document.getElementById('questionInput').value;
-  const outputElement = document.getElementById('output');
-  outputElement.innerHTML = '<p>Please wait...</p>';
-
-  // Generate AI response based on the prompt
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
+    const fileInput = document.getElementById('fileInput');
+    const prompt = document.getElementById('questionInput').value;
+    const outputElement = document.getElementById('output');
+    outputElement.innerHTML = '<p>Please wait...</p>';
   
-  // Handle the AI response
-  handleResponse(text);
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = async function(evt) {
+        const arrayBuffer = evt.target.result;
+        let textContent = '';
+  
+        if (file.type === 'application/pdf') {
+          const pdfData = new Uint8Array(arrayBuffer);
+          const pdfDoc = await pdfjsLib.getDocument({data: pdfData}).promise;
+          for(let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+            const page = await pdfDoc.getPage(pageNum);
+            const text = await page.getTextContent();
+            textContent += text.items.map(item => item.str).join(' ');
+          }
+        } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+          const textContentResult = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
+          textContent = textContentResult.value;
+        } else {
+          const imageParts = await Promise.all(
+            [...fileInput.files].map(fileToGenerativePart)
+          );
+          const result = await model.generateContent([prompt, ...imageParts]);
+          const response = await result.response;
+          const text = response.text();
+          outputElement.innerText = text;
+          return;
+        }
+  
+        console.log(textContent); // Log the extracted text to the console
+  
+        // Continue with the rest of the code to handle the AI response
+        const extractedTextCharCount = textContent.length;
+        const questionCharCount = prompt.length;
+        charCountElement.textContent = `Character count: ${extractedTextCharCount + questionCharCount} `;
+        const result = await model.generateContent(prompt + ' ' + textContent);
+        const response = await result.response;
+        const text = response.text();
+  
+        if (text.trim() === '') {
+          outputElement.innerText = 'No text input or image selected';
+        } else {
+          const converter = new showdown.Converter();
+          const html = converter.makeHtml(text);
+          outputElement.innerHTML = html;
+        }
+        handleResponse(text);
+        document.getElementById('questionInput').value = '';
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      if (prompt.trim() === '') {
+        outputElement.innerText = 'Please enter a question or upload a file.';
+      } else {
+        const questionCharCount = prompt.length;
+        charCountElement.textContent = `Character count: ${questionCharCount}`;
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        if (text.trim() === '') {
+          outputElement.innerText = 'No response found for the given question.';
+        } else {
+          const converter = new showdown.Converter();
+          const html = converter.makeHtml(text);
+          outputElement.innerHTML = html;
+        }
+      }
+    }
+ handleResponse(text);
+ document.getElementById('questionInput').value = '';
 
-  // Clear the input field
-  document.getElementById('questionInput').value = '';
-});
+  });
+  
 
 document.getElementById('questionInput').addEventListener('input', () => {
   const questionCharCount = document.getElementById('questionInput').value.length;
@@ -170,7 +232,7 @@ document.getElementById('questionInput').addEventListener('input', () => {
 
   let recognition;
   
-  // Initialize speech recognition
+
   if ('webkitSpeechRecognition' in window) {
     recognition = new webkitSpeechRecognition();
     recognition.continuous = true;
@@ -179,25 +241,24 @@ document.getElementById('questionInput').addEventListener('input', () => {
     console.error('Speech recognition not supported');
   }
   
-  // Event listener for speech recognition result
+
   recognition.onresult = function(event) {
     let interimTranscript = '';
     for (let i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
         const transcript = event.results[i][0].transcript;
-        document.getElementById('questionInput').value += transcript; // Append recognized speech to the question input field
+        document.getElementById('questionInput').value += transcript; 
       } else {
         interimTranscript += event.results[i][0].transcript;
       }
     }
 
-    // Automatically send input after a pause in speech
     if (interimTranscript === '') {
       document.getElementById('sendButton').click();
     }
   };
   
-  // Toggle speech recognition
+
   function toggleRecording() {
     if (recognition) {
       if (recognition.state === 'listening') {
