@@ -6,3 +6,6 @@ An Audio-Interactive Document Assistant for the Visually Impaired powered by Goo
 - Text Understanding and Question Answering: Use the Gemini API to understand the content and answer any questions the user might have about the document using the speech-to-text from the user.
 - Text-to-Speech (TTS): Use the speechSynthesis interface of the Web Speech API to convert the text into audio. This will involve creating a new SpeechSynthesisUtterance instance with the text you want to speak, and passing it to the speechSynthesis.speak() method.
 - Speech-to-Text (STT): Use the webkitSpeechRecognition interface of the Web Speech API to convert spoken input into text. This will involve creating a new webkitSpeechRecognition instance, setting up event handlers for the onresult event to handle the recognized text, and calling the start() method to start the speech recognition.
+
+
+make with react- react-speech-recognition for speech-to-text and react-speech-kit for text-to-speech.
