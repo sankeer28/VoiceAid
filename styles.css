@@ -1,0 +1,95 @@
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 20px; 
+    line-height: 1.5;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+
+  
+  h1 {
+    font-size: 2.5em;
+    background: linear-gradient(90deg, #bd93f9, #ff79c6, #ff5555, #ffb86c, #f1fa8c);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: gradient 5s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0%;
+    }
+    100% {
+      background-position: 100%;
+    }
+  }
+  
+  
+ 
+  
+  p {
+    margin-bottom: 10px;
+  }
+  
+
+  input[type="text"],
+  input[type="password"],
+  input[type="file"] {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1.2em;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-right: 10px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+
+  #output {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    min-height: 150px;
+    font-size: 1.2em;
+  }
+  
+
+  @media (max-width: 768px) {
+    input[type="text"],
+    input[type="password"],
+    input[type="file"] {
+      font-size: 1em;
+    }
+  
+    button {
+      font-size: 1em;
+      padding: 10px 15px;
+    }
+  }
+  

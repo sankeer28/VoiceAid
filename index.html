@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VoiceAid</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.228/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+  </script>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="title">
+  <h1>VoiceAid</h1>
+  <p>Audio-Interactive Document Assistant</p>
+  <p style="font-style: italic;">Valid Files: .pdf, .docx, .png, .jpg, .jpeg</p>
+</div>
+<div style="position: relative;">
+  <input id="apiKeyInput" type="password" placeholder="Enter your API key" autocomplete="new-password">
+  <i id="togglePasswordVisibility" class="fa fa-eye-slash"></i>
+</div>
+
+<input type="file" id="fileInput">
+<input id="questionInput" type="text" placeholder="Ask your question here ">
+
+<button id="sendButton">Send <i class="fa fa-microphone"></i></button>
+<div id="output"></div>
+<button id="copyButton">Copy</button>
+<a href="https://github.com/sankeer28/Gemini-Homework-Helper" target="_blank" class="github-link">GitHub</a>
+<a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-link">Need API Key?</a>
+
+<script type="module">
+
+  document.getElementById('copyButton').addEventListener('click', () => {
+    const outputElement = document.getElementById('output');
+    const textToCopy = outputElement.innerText;
+    const textarea = document.createElement('textarea');
+    textarea.value = textToCopy;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    const copyButton = document.getElementById('copyButton');
+    copyButton.textContent = 'Copied';
+    setTimeout(() => {
+        copyButton.textContent = 'Copy';
+    }, 2000); 
+});
+
+
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  const togglePasswordVisibility = document.getElementById('togglePasswordVisibility');
+
+  togglePasswordVisibility.addEventListener('click', () => {
+    const type = apiKeyInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    apiKeyInput.setAttribute('type', type);
+
+    togglePasswordVisibility.classList.toggle('fa-eye');
+    togglePasswordVisibility.classList.toggle('fa-eye-slash');
+  });
+  import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
+
+  let API_KEY = localStorage.getItem('API_KEY');
+  document.getElementById('apiKeyInput').value = API_KEY;
+
+  let genAI;
+  let model;
+
+  async function createModel(modelType = "gemini-pro") {
+    API_KEY = document.getElementById('apiKeyInput').value;
+    localStorage.setItem('API_KEY', API_KEY);
+    genAI = new GoogleGenerativeAI(API_KEY);
+    model = genAI.getGenerativeModel({ 
+      model: modelType,
+      safetySettings: [
+        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
+      ]
+    });
+  }
+  
+  window.addEventListener('DOMContentLoaded', () => {
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    apiKeyInput.placeholder = "Enter API key here";
+    toggleRecording(); // Automatically start listening on page load
+  });
+  
+  await createModel();
+
+const charCountElement = document.createElement('p');
+charCountElement.textContent = 'Character Count: 0'; 
+const outputDiv = document.getElementById('output');
+outputDiv.parentNode.insertBefore(charCountElement, outputDiv);
+
+// Function to handle the AI response and play audio
+async function handleResponse(text) {
+  const outputElement = document.getElementById('output');
+  if (text.trim() === '') {
+    outputElement.innerText = 'No response found';
+  } else {
+    const converter = new showdown.Converter();
+    const html = converter.makeHtml(text);
+    outputElement.innerHTML = html;
+    playAudio(text); // Play audio after displaying the response
+  }
+}
+
+// Function to play audio from the response text
+function playAudio(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  window.speechSynthesis.speak(utterance);
+}
+
+// Event listener for the send button
+document.getElementById('sendButton').addEventListener('click', async () => {
+  const prompt = document.getElementById('questionInput').value;
+  const outputElement = document.getElementById('output');
+  outputElement.innerHTML = '<p>Please wait...</p>';
+
+  // Generate AI response based on the prompt
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  
+  // Handle the AI response
+  handleResponse(text);
+
+  // Clear the input field
+  document.getElementById('questionInput').value = '';
+});
+
+document.getElementById('questionInput').addEventListener('input', () => {
+  const questionCharCount = document.getElementById('questionInput').value.length;
+  charCountElement.textContent = `Character count: ${questionCharCount}`; 
+});
+
+  
+  document.getElementById('fileInput').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (file.type.startsWith('image/')) {
+      await createModel("gemini-pro-vision"); 
+    } else {
+      await createModel("gemini-pro"); 
+    }
+  });
+
+  document.getElementById('apiKeyInput').addEventListener('input', () => {
+    createModel(model.model);
+  });
+
+  async function fileToGenerativePart(file) {
+    const base64EncodedDataPromise = new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(file);
+    });
+    return {
+      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+    };
+  }
+
+  let recognition;
+  
+  // Initialize speech recognition
+  if ('webkitSpeechRecognition' in window) {
+    recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+  } else {
+    console.error('Speech recognition not supported');
+  }
+  
+  // Event listener for speech recognition result
+  recognition.onresult = function(event) {
+    let interimTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        const transcript = event.results[i][0].transcript;
+        document.getElementById('questionInput').value += transcript; // Append recognized speech to the question input field
+      } else {
+        interimTranscript += event.results[i][0].transcript;
+      }
+    }
+
+    // Automatically send input after a pause in speech
+    if (interimTranscript === '') {
+      document.getElementById('sendButton').click();
+    }
+  };
+  
+  // Toggle speech recognition
+  function toggleRecording() {
+    if (recognition) {
+      if (recognition.state === 'listening') {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    }
+  }
+
+</script>
+</body>
+</html>
