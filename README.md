@@ -8,4 +8,5 @@ An Audio-Interactive Document Assistant for the Visually Impaired powered by Goo
 - Speech-to-Text (STT): Use the webkitSpeechRecognition interface of the Web Speech API to convert spoken input into text. This will involve creating a new webkitSpeechRecognition instance, setting up event handlers for the onresult event to handle the recognized text, and calling the start() method to start the speech recognition.
 
 
-make with react- react-speech-recognition for speech-to-text and react-speech-kit for text-to-speech.
+### index1.html  uplaoded file is deleted after ai finishes talking, fix that error.
+### microphone stops working after a while, fix that.
