@@ -21,8 +21,9 @@
   <h1>VoiceAid</h1>
   <p>Audio-Interactive Document Assistant</p>
   <p style="font-style: italic;">Valid Files: .pdf, .docx, .png, .jpg, .jpeg</p>
+  <p style="font-style: italic;">Commands: "stop talking"/"stop", "delete file"/"remove file"/"remove the file"/"delete the file"</p>
 </div>
-<div style="position: relative;">
+<div id="apiKeyInputContainer">
   <input id="apiKeyInput" type="password" placeholder="Enter your API key" autocomplete="new-password">
   <i id="togglePasswordVisibility" class="fa fa-eye-slash"></i>
 </div>
@@ -30,7 +31,7 @@
 <input type="file" id="fileInput">
 <input id="questionInput" type="text" placeholder="Ask your question here ">
 
-<button id="sendButton">Send <i></i></button>
+<button id="sendButton">Send <i class="fa fa-microphone"></i></button>
 <div id="output"></div>
 <button id="copyButton">Copy</button>
 <a href="https://github.com/sankeer28/Gemini-Homework-Helper" target="_blank" class="github-link">GitHub</a>
@@ -38,6 +39,7 @@
 
 <script type="module">
     document.getElementById('sendButton').style.display = 'none';
+    document.getElementById('questionInput').style.display = 'none';
   document.getElementById('copyButton').addEventListener('click', () => {
     const outputElement = document.getElementById('output');
     const textToCopy = outputElement.innerText;
@@ -110,15 +112,34 @@ async function handleResponse(text) {
     const converter = new showdown.Converter();
     const html = converter.makeHtml(text);
     outputElement.innerHTML = html;
-    playAudio(text); // Play audio after displaying the response
+    
+    // Play audio after displaying the response
+    playAudio(text);
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.addEventListener('end', () => {
+      // Clear the question input after speech ends
+      document.getElementById('questionInput').value = ''; 
+    });
+    window.speechSynthesis.speak(utterance);
+
+    // Clear the question input directly after speech starts
+    document.getElementById('questionInput').value = ''; 
   }
 }
 
-// Function to play audio from the response text
+// Function to play audio from the response text with modified voice properties
 function playAudio(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  window.speechSynthesis.speak(utterance);
-}
+    const utterance = new SpeechSynthesisUtterance(text);
+  
+    // Adjust pitch, rate, and volume as needed
+    utterance.pitch = 0.8;
+    utterance.rate = 0.9;
+    utterance.volume = 1;
+  
+    window.speechSynthesis.speak(utterance);
+  }
+  
 
 document.getElementById('sendButton').addEventListener('click', async () => {
     const fileInput = document.getElementById('fileInput');
@@ -152,6 +173,7 @@ document.getElementById('sendButton').addEventListener('click', async () => {
           const response = await result.response;
           const text = response.text();
           outputElement.innerText = text;
+          playAudio(text); // Play audio after displaying the response
           return;
         }
   
@@ -171,8 +193,8 @@ document.getElementById('sendButton').addEventListener('click', async () => {
           const converter = new showdown.Converter();
           const html = converter.makeHtml(text);
           outputElement.innerHTML = html;
+          playAudio(text); // Play audio after displaying the response
         }
-        handleResponse(text);
         document.getElementById('questionInput').value = '';
       };
       reader.readAsArrayBuffer(file);
@@ -191,9 +213,11 @@ document.getElementById('sendButton').addEventListener('click', async () => {
           const converter = new showdown.Converter();
           const html = converter.makeHtml(text);
           outputElement.innerHTML = html;
+          playAudio(text); // Play audio after displaying the response
         }
       }
     }
+    document.getElementById('questionInput').value = '';
   });
   
 
@@ -228,35 +252,56 @@ document.getElementById('questionInput').addEventListener('input', () => {
   }
 
   let recognition;
-  
-  // Initialize speech recognition
+
   if ('webkitSpeechRecognition' in window) {
     recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
+    recognition.continuous = true; // Keep listening continuously
     recognition.interimResults = true;
+    recognition.onerror = function(event) {
+      console.error('Speech recognition error:', event.error);
+      recognition.start(); // Restart recognition if error occurs
+    };
   } else {
     console.error('Speech recognition not supported');
   }
   
-  // Event listener for speech recognition result
   recognition.onresult = function(event) {
     let interimTranscript = '';
     for (let i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
         const transcript = event.results[i][0].transcript;
-        document.getElementById('questionInput').value += transcript; // Append recognized speech to the question input field
+        if (transcript.toLowerCase().includes('stop talking')) {
+          window.speechSynthesis.cancel(); // Stop speaking
+          document.getElementById('fileInput').value = ''; // Remove uploaded file
+        } else if (transcript.toLowerCase().includes('delete file') || transcript.toLowerCase().includes('remove file') || transcript.toLowerCase().includes('remove the file') || transcript.toLowerCase().includes('remove the file')) {
+          document.getElementById('fileInput').value = ''; // Remove uploaded file
+          window.speechSynthesis.cancel();
+          createModel("gemini-pro");
+        } else {
+          document.getElementById('questionInput').value += transcript; // Append transcript to question input
+        }
       } else {
         interimTranscript += event.results[i][0].transcript;
       }
     }
 
-    // Automatically send input after a pause in speech
     if (interimTranscript === '') {
       document.getElementById('sendButton').click();
     }
   };
-  
-  // Toggle speech recognition
+
+// Define a function to start recognition and restart it after a delay
+function startRecognition() {
+  recognition.start();
+  recognition.onend = function() {
+    recognition.start(); // Restart recognition when it ends
+  }
+}
+
+// Start recognition loop
+startRecognition();
+
+
   function toggleRecording() {
     if (recognition) {
       if (recognition.state === 'listening') {

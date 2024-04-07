@@ -34,7 +34,7 @@
 <button id="sendButton">Send <i class="fa fa-microphone"></i></button>
 <div id="output"></div>
 <button id="copyButton">Copy</button>
-<a href="https://github.com/sankeer28/VoiceAid" target="_blank" class="github-link">GitHub</a>
+<a href="https://github.com/sankeer28/Gemini-Homework-Helper" target="_blank" class="github-link">GitHub</a>
 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-link">Need API Key?</a>
 
 <!-- Element to display live transcription -->
@@ -285,6 +285,7 @@ document.getElementById('questionInput').addEventListener('input', () => {
           createModel("gemini-pro");
         } else {
           document.getElementById('questionInput').value += transcript; // Append transcript to question input
+          // Display live transcription temporarily
           updateLiveTranscription(transcript);
         }
       } else {
@@ -313,7 +314,7 @@ function updateLiveTranscription(text) {
   liveTranscriptionElement.textContent = text;
   setTimeout(() => {
     liveTranscriptionElement.textContent = '';
-  }, 9000); // Remove live transcription after 9 seconds
+  }, 3000); // Remove live transcription after 3 seconds
 }
 
   function toggleRecording() {

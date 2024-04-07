@@ -1,95 +1,220 @@
 
 body {
-    font-family: Arial, sans-serif;
-    font-size: 20px; 
-    line-height: 1.5;
-    margin: 0;
-    padding: 20px;
-    background-color: #f4f4f4;
-    color: #333;
-  }
-  
-  .title {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+  font-family: Arial, sans-serif;
+  background-color: #d1d7df;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+input, button {
+  margin: 10px;
+  border: none;
+  border-radius: 10px; 
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#questionInput {
+  width: 80%; 
+  height: 40px;
+  background-color: #404950; 
+  color: #ffffff;
+  padding-left: 15px;
+
+}
+
+#sendButton {
+  background-color: #3a438a; 
+  color: #ffffff; 
+  padding: 10px 20px; 
+  cursor: pointer; 
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#sendButton:hover {
+  background-color: #5462b4; 
+  transform: scale(1.05); 
+}
 
 
-  
-  h1 {
-    font-size: 2.5em;
-    background: linear-gradient(90deg, #bd93f9, #ff79c6, #ff5555, #ffb86c, #f1fa8c);
-    background-size: 200% auto;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: gradient 5s ease infinite;
-  }
-  
-  @keyframes gradient {
-    0% {
+#fileInput{
+  margin: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  position: relative;  
+}
+
+
+#output {
+  width: 80%;
+  height: 300px;
+  padding: 10px;
+  overflow: auto;
+  margin-top: 20px;
+  color: #ffffff;
+  background-color: #e5e8ea;
+  border-radius: 10px; 
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+  scrollbar-width: thin; 
+  scrollbar-color: #5462b4 #23272a; 
+}
+
+#output::-webkit-scrollbar {
+  width: 10px; 
+}
+
+#output::-webkit-scrollbar-thumb {
+  background-color: #5462b4; 
+  border-radius: 5px;
+}
+
+#output::-webkit-scrollbar-track {
+  background-color: #23272a; 
+  border-radius: 5px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+h1 {
+  text-align: center;
+  font-size: 2.5em;
+  background: linear-gradient(90deg, #bd93f9, #ff79c6, #ff5555, #ffb86c, #f1fa8c);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: gradient 5s ease infinite;
+  margin-bottom: 20px !important;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes gradient {
+  0% {
       background-position: 0%;
-    }
-    100% {
+  }
+  100% {
       background-position: 100%;
-    }
   }
-  
-  
- 
-  
-  p {
-    margin-bottom: 10px;
-  }
-  
+}
 
-  input[type="text"],
-  input[type="password"],
-  input[type="file"] {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1.2em;
-  }
-  
-  button {
-    background-color: #007bff;
-    color: white;
-    padding: 15px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.2em;
-    margin-right: 10px;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
+p {
+  color: #000000;
+  font-weight: bold;
+  align-items: center;
+  font-size: 1.3em;
+}
 
-  #output {
-    background-color: white;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    min-height: 150px;
-    font-size: 1.2em;
-  }
-  
+#apiKeyInput {
+  margin: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  position: relative; 
+}
 
-  @media (max-width: 768px) {
-    input[type="text"],
-    input[type="password"],
-    input[type="file"] {
-      font-size: 1em;
-    }
-  
-    button {
-      font-size: 1em;
-      padding: 10px 15px;
-    }
+#togglePasswordVisibility {
+  right: 10px; 
+  cursor: pointer;
+}
+
+
+
+@media only screen and (max-width: 600px) {
+  #output, #questionInput {
+      width: 90%; 
   }
-  
+}
+
+
+#modelSelect {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #cdcfd0;
+  color: #333;
+  width: 200px;
+}
+
+#modelSelect option {
+  padding: 5px;
+}
+
+.github-link {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  padding: 10px 20px; 
+  background-color: #333;
+  color: #fff; 
+  text-align: center; 
+  border-radius: 5px; 
+  text-decoration: none; 
+  font-weight: bold; 
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.github-link:hover {
+  background-color: #555; 
+  transform: scale(1.05); 
+}
+
+
+.api-link {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  z-index: 1000;
+  padding: 10px 20px; 
+  background-color: #333;
+  color: #fff; 
+  text-align: center; 
+  border-radius: 5px; 
+  text-decoration: none; 
+  font-weight: bold; 
+  transition: background-color 0.3s ease, transform 0.2s ease;
+
+}
+
+.api-link:hover {
+  background-color: #555; 
+  transform: scale(1.05); 
+}
+
+
+#copyButton {
+  padding: 20px 30px;
+  background-color: #6c9cb5;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#copyButton:hover {
+  background-color: #90c4e2;
+  transform: scale(1.05); 
+}
+
+
+#liveTranscription {
+  color: #000000;
+  font-weight: bold;
+  align-items: center;
+}

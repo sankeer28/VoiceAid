@@ -37,7 +37,7 @@
 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-link">Need API Key?</a>
 
 <script type="module">
-
+    document.getElementById('sendButton').style.display = 'none';
   document.getElementById('copyButton').addEventListener('click', () => {
     const outputElement = document.getElementById('output');
     const textToCopy = outputElement.innerText;
@@ -110,33 +110,114 @@ async function handleResponse(text) {
     const converter = new showdown.Converter();
     const html = converter.makeHtml(text);
     outputElement.innerHTML = html;
-    playAudio(text); // Play audio after displaying the response
+    
+    // Play audio after displaying the response
+    playAudio(text);
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.addEventListener('end', () => {
+      // Clear the question input after speech ends
+      document.getElementById('questionInput').value = ''; 
+    });
+    window.speechSynthesis.speak(utterance);
+
+    // Clear the question input directly after speech starts
+    document.getElementById('questionInput').value = ''; 
   }
 }
 
-// Function to play audio from the response text
+// Function to play audio from the response text with modified voice properties
 function playAudio(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  window.speechSynthesis.speak(utterance);
-}
-
-// Event listener for the send button
-document.getElementById('sendButton').addEventListener('click', async () => {
-  const prompt = document.getElementById('questionInput').value;
-  const outputElement = document.getElementById('output');
-  outputElement.innerHTML = '<p>Please wait...</p>';
-
-  // Generate AI response based on the prompt
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
+    const utterance = new SpeechSynthesisUtterance(text);
   
-  // Handle the AI response
-  handleResponse(text);
+    // Adjust pitch, rate, and volume as needed
+    utterance.pitch = 0.8;
+    utterance.rate = 0.9;
+    utterance.volume = 1;
+  
+    window.speechSynthesis.speak(utterance);
+  }
+  
 
-  // Clear the input field
-  document.getElementById('questionInput').value = '';
-});
+document.getElementById('sendButton').addEventListener('click', async () => {
+    const fileInput = document.getElementById('fileInput');
+    const prompt = document.getElementById('questionInput').value;
+    const outputElement = document.getElementById('output');
+    outputElement.innerHTML = '<p>Please wait...</p>';
+  
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = async function(evt) {
+        const arrayBuffer = evt.target.result;
+        let textContent = '';
+  
+        if (file.type === 'application/pdf') {
+          const pdfData = new Uint8Array(arrayBuffer);
+          const pdfDoc = await pdfjsLib.getDocument({data: pdfData}).promise;
+          for(let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+            const page = await pdfDoc.getPage(pageNum);
+            const text = await page.getTextContent();
+            textContent += text.items.map(item => item.str).join(' ');
+          }
+        } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+          const textContentResult = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
+          textContent = textContentResult.value;
+        } else {
+          const imageParts = await Promise.all(
+            [...fileInput.files].map(fileToGenerativePart)
+          );
+          const result = await model.generateContent([prompt, ...imageParts]);
+          const response = await result.response;
+          const text = response.text();
+          outputElement.innerText = text;
+          playAudio(text); // Play audio after displaying the response
+          return;
+        }
+  
+        console.log(textContent); // Log the extracted text to the console
+  
+        // Continue with the rest of the code to handle the AI response
+        const extractedTextCharCount = textContent.length;
+        const questionCharCount = prompt.length;
+        charCountElement.textContent = `Character count: ${extractedTextCharCount + questionCharCount} `;
+        const result = await model.generateContent(prompt + ' ' + textContent);
+        const response = await result.response;
+        const text = response.text();
+  
+        if (text.trim() === '') {
+          outputElement.innerText = 'No text input or image selected';
+        } else {
+          const converter = new showdown.Converter();
+          const html = converter.makeHtml(text);
+          outputElement.innerHTML = html;
+          playAudio(text); // Play audio after displaying the response
+        }
+        document.getElementById('questionInput').value = '';
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      if (prompt.trim() === '') {
+        outputElement.innerText = 'Please enter a question or upload a file.';
+      } else {
+        const questionCharCount = prompt.length;
+        charCountElement.textContent = `Character count: ${questionCharCount}`;
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        if (text.trim() === '') {
+          outputElement.innerText = 'No response found for the given question.';
+        } else {
+          const converter = new showdown.Converter();
+          const html = converter.makeHtml(text);
+          outputElement.innerHTML = html;
+          playAudio(text); // Play audio after displaying the response
+        }
+      }
+    }
+    document.getElementById('questionInput').value = '';
+  });
+  
 
 document.getElementById('questionInput').addEventListener('input', () => {
   const questionCharCount = document.getElementById('questionInput').value.length;
@@ -170,34 +251,46 @@ document.getElementById('questionInput').addEventListener('input', () => {
 
   let recognition;
   
-  // Initialize speech recognition
+
   if ('webkitSpeechRecognition' in window) {
     recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
+    recognition.continuous = true; // Keep listening continuously
     recognition.interimResults = true;
+    recognition.onerror = function(event) {
+      console.error('Speech recognition error:', event.error);
+      recognition.start(); // Restart recognition if error occurs
+    };
   } else {
     console.error('Speech recognition not supported');
   }
   
-  // Event listener for speech recognition result
+
   recognition.onresult = function(event) {
     let interimTranscript = '';
     for (let i = event.resultIndex; i < event.results.length; ++i) {
       if (event.results[i].isFinal) {
         const transcript = event.results[i][0].transcript;
-        document.getElementById('questionInput').value += transcript; // Append recognized speech to the question input field
+        document.getElementById('questionInput').value += transcript; 
       } else {
         interimTranscript += event.results[i][0].transcript;
       }
     }
 
-    // Automatically send input after a pause in speech
     if (interimTranscript === '') {
       document.getElementById('sendButton').click();
     }
   };
-  
-  // Toggle speech recognition
+
+  // Define a function to start recognition and restart it after a delay
+function startRecognition() {
+    recognition.start();
+    setTimeout(startRecognition, 1000); // Restart recognition after 1 second
+}
+
+// Start recognition loop
+startRecognition();
+
+
   function toggleRecording() {
     if (recognition) {
       if (recognition.state === 'listening') {
