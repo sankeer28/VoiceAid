@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Video Search</title>
+</head>
+<body>
+
+<h1>Search for YouTube Videos</h1>
+
+<input type="text" id="queryInput" placeholder="Enter your query">
+<button onclick="searchVideos()">Search</button>
+
+<div id="player"></div>
+
+<script>
+async function searchVideos() {
+  const query = document.getElementById("queryInput").value.trim();
+  if (!query) {
+    alert("Please enter a search query.");
+    return;
+  }
+
+  const apiKey = ' '; // Replace with your YouTube Data API key
+  const maxResults = 5; // Maximum number of results to retrieve
+  
+  const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${encodeURIComponent(query)}&maxResults=${maxResults}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // Extract video data from the search results
+    const videos = data.items.map(item => ({
+      id: item.id.videoId,
+      title: item.snippet.title,
+      likes: item.statistics?.likeCount || 0,
+      dislikes: item.statistics?.dislikeCount || 0
+    }));
+
+    // Calculate the likes-to-dislikes ratio for each video
+    videos.forEach(video => {
+      const totalVotes = video.likes + video.dislikes;
+      video.ratio = totalVotes > 0 ? video.likes / totalVotes : 0;
+    });
+
+    // Sort the videos based on the likes-to-dislikes ratio in descending order
+    videos.sort((a, b) => b.ratio - a.ratio);
+
+    // Choose the best-rated video
+    const bestVideo = videos[0];
+    
+    // Embed the video player on the webpage
+    const playerDiv = document.getElementById("player");
+    playerDiv.innerHTML = `
+      <h2>Best Video: ${bestVideo.title}</h2>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/${bestVideo.id}" frameborder="0" allowfullscreen></iframe>
+    `;
+  } catch (error) {
+    console.error("An error occurred:", error);
+    alert("Failed to retrieve search results.");
+  }
+}
+</script>
+
+</body>
+</html>
