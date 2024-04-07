@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Current Time and Location</title>
+</head>
+<body>
+
+<h1>Current Time and Location</h1>
+
+<p id="currentTime"></p>
+<p id="approxLocation"></p>
+
+<script>
+window.onload = function() {
+    // Get current date and time
+    const currentDate = new Date();
+    const currentTimeString = currentDate.toLocaleTimeString();
+
+    // Display current time
+    document.getElementById("currentTime").textContent = "Current Time: " + currentTimeString;
+
+    // Use a free IP geolocation service to get approximate location
+    fetch('https://ipapi.co/json/')
+        .then(response => response.json())
+        .then(data => {
+            const approximateLocation = `${data.city}, ${data.region}, ${data.country_name}`;
+            document.getElementById("approxLocation").textContent = "Approximate Location: " + approximateLocation;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById("approxLocation").textContent = "Failed to retrieve location";
+        });
+};
+</script>
+
+</body>
+</html>
