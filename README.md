@@ -1,7 +1,7 @@
 # VoiceAid
 
 VoiceAid is an Audio-Interactive Document Assistant designed to assist the visually impaired in navigating documents. Powered by Google's Gemini, VoiceAid allows users to interact with documents using voice commands and provides audio responses.
-
+### Recommended to use on a chromium-based browser
 ## Features
 
 - Supports various file formats including PDF, DOCX, PNG, JPG, and JPEG.
@@ -9,7 +9,7 @@ VoiceAid is an Audio-Interactive Document Assistant designed to assist the visua
 - Provides live transcription of user commands.
 - Allows users to upload documents and ask questions via voice or text input.
 - Offers audio feedback for responses and commands.
-
+- uses Chromium's built-in TTS: Microsoft Liam Online (Natural) - English (Canada)
 ## Getting Started
 
 To use VoiceAid, you'll need an API key from Google's AI Studio. Follow these steps to get started:
