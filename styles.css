@@ -51,6 +51,21 @@ input, button {
   position: relative;  
 }
 
+.custom-file-upload {
+  display: inline-block;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 10px;
+}
+
+.custom-file-upload:hover {
+  background-color: #f0f0f0;
+}
+
 
 #output {
   width: 80%;
@@ -58,12 +73,16 @@ input, button {
   padding: 10px;
   overflow: auto;
   margin-top: 20px;
-  color: #ffffff;
+  color: #000000;
   background-color: #e5e8ea;
   border-radius: 10px; 
   box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
   scrollbar-width: thin; 
-  scrollbar-color: #5462b4 #23272a; 
+  scrollbar-color: #5462b4 #23272a;
+  color: #000000;
+  font-weight: bold;
+  align-items: center;
+  font-size: 1.3em;
 }
 
 #output::-webkit-scrollbar {
@@ -113,8 +132,9 @@ p {
   color: #000000;
   font-weight: bold;
   align-items: center;
-  font-size: 1.3em;
 }
+
+
 
 #apiKeyInput {
   margin: 10px;
@@ -129,7 +149,6 @@ p {
   right: 10px; 
   cursor: pointer;
 }
-
 
 
 @media only screen and (max-width: 600px) {
@@ -217,4 +236,13 @@ p {
   color: #000000;
   font-weight: bold;
   align-items: center;
+  font-size: 2.5em;
+}
+#liveTranscription {
+  position: absolute;
+  top: 50%;
+  left: 50%; 
+  transform: translateX(-50%); 
+  background-color: rgba(255, 255, 255, 0.5); 
+  padding: 10px;
 }

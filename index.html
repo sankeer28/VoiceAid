@@ -22,13 +22,13 @@
   <p>Audio-Interactive Document Assistant</p>
   <p style="font-style: italic;">Valid Files: .pdf, .docx, .png, .jpg, .jpeg</p>
   <p style="font-style: italic;">Commands: "stop talking"/"stop", "delete file"/"remove file"/"remove the file"/"delete the file"</p>
+  <p style="font-style: italic;">Use on a Chromium-based browser for best experience</p>
 </div>
 <div id="apiKeyInputContainer">
   <input id="apiKeyInput" type="password" placeholder="Enter your API key" autocomplete="new-password" >
   <i id="togglePasswordVisibility" class="fa fa-eye-slash"></i>
 </div>
-
-<input type="file" id="fileInput">
+<input type="file" id="fileInput" ="updateLabel()">
 <input id="questionInput" type="text" placeholder="Ask your question here ">
 <div id="liveTranscription"></div>
 <button id="sendButton">Send <i class="fa fa-microphone"></i></button>
@@ -37,7 +37,6 @@
 <a href="https://github.com/sankeer28/VoiceAid" target="_blank" class="github-link">GitHub</a>
 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-link">Need API Key?</a>
 
-<!-- Element to display live transcription -->
 
 
 <script type="module">
@@ -96,7 +95,7 @@
   window.addEventListener('DOMContentLoaded', () => {
     const apiKeyInput = document.getElementById('apiKeyInput');
     apiKeyInput.placeholder = "Enter API key here";
-    toggleRecording(); // Automatically start listening on page load
+    toggleRecording(); 
   });
   
   await createModel();
@@ -106,10 +105,10 @@ charCountElement.textContent = 'Character Count: 0';
 const outputDiv = document.getElementById('output');
 outputDiv.parentNode.insertBefore(charCountElement, outputDiv);
 
-// Element to display live transcription
+
 const liveTranscriptionElement = document.getElementById('liveTranscription');
 
-// Function to handle the AI response and play audio
+
 async function handleResponse(text) {
   const outputElement = document.getElementById('output');
   if (text.trim() === '') {
@@ -118,31 +117,21 @@ async function handleResponse(text) {
     const converter = new showdown.Converter();
     const html = converter.makeHtml(text);
     outputElement.innerHTML = html;
-    
-    // Play audio after displaying the response
     playAudio(text);
-    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.addEventListener('end', () => {
-      // Clear the question input after speech ends
       document.getElementById('questionInput').value = ''; 
     });
     window.speechSynthesis.speak(utterance);
-
-    // Clear the question input directly after speech starts
     document.getElementById('questionInput').value = ''; 
   }
 }
 
 function playAudio(text) {
   const utterance = new SpeechSynthesisUtterance(text);
-
-  // Adjust pitch, rate, and volume as needed
   utterance.pitch = 0.8;
   utterance.rate = 0.9;
   utterance.volume = 1;
-
-  // Specify the default voice as "Microsoft Liam Online (Natural) - English (Canada)"
   utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.name === 'Microsoft Liam Online (Natural) - English (Canada)');
 
   window.speechSynthesis.speak(utterance);
@@ -181,13 +170,13 @@ document.getElementById('sendButton').addEventListener('click', async () => {
           const response = await result.response;
           const text = response.text();
           outputElement.innerText = text;
-          playAudio(text); // Play audio after displaying the response
+          playAudio(text); 
           return;
         }
   
-        console.log(textContent); // Log the extracted text to the console
+        console.log(textContent);
   
-        // Continue with the rest of the code to handle the AI response
+       
         const extractedTextCharCount = textContent.length;
         const questionCharCount = prompt.length;
         charCountElement.textContent = `Character count: ${extractedTextCharCount + questionCharCount} `;
@@ -196,19 +185,19 @@ document.getElementById('sendButton').addEventListener('click', async () => {
         const text = response.text();
   
         if (text.trim() === '') {
-          outputElement.innerText = 'No text input or image selected';
+          outputElement.innerText = 'No input or image selected';
         } else {
           const converter = new showdown.Converter();
           const html = converter.makeHtml(text);
           outputElement.innerHTML = html;
-          playAudio(text); // Play audio after displaying the response
+          playAudio(text); 
         }
         document.getElementById('questionInput').value = '';
       };
       reader.readAsArrayBuffer(file);
     } else {
       if (prompt.trim() === '') {
-        outputElement.innerText = 'Please enter a question or upload a file.';
+        outputElement.innerText = 'Please ask a question or upload a file and ask.';
       } else {
         const questionCharCount = prompt.length;
         charCountElement.textContent = `Character count: ${questionCharCount}`;
@@ -221,7 +210,7 @@ document.getElementById('sendButton').addEventListener('click', async () => {
           const converter = new showdown.Converter();
           const html = converter.makeHtml(text);
           outputElement.innerHTML = html;
-          playAudio(text); // Play audio after displaying the response
+          playAudio(text); 
         }
       }
     }
@@ -263,11 +252,11 @@ document.getElementById('questionInput').addEventListener('input', () => {
 
   if ('webkitSpeechRecognition' in window) {
     recognition = new webkitSpeechRecognition();
-    recognition.continuous = true; // Keep listening continuously
+    recognition.continuous = true; 
     recognition.interimResults = true;
     recognition.onerror = function(event) {
       console.error('Speech recognition error:', event.error);
-      recognition.start(); // Restart recognition if error occurs
+      recognition.start(); 
     };
   } else {
     console.error('Speech recognition not supported');
@@ -279,14 +268,14 @@ document.getElementById('questionInput').addEventListener('input', () => {
       if (event.results[i].isFinal) {
         const transcript = event.results[i][0].transcript;
         if (transcript.toLowerCase().includes('stop talking')) {
-          window.speechSynthesis.cancel(); // Stop speaking
-          document.getElementById('fileInput').value = ''; // Remove uploaded file
+          window.speechSynthesis.cancel(); 
+          document.getElementById('fileInput').value = ''; 
         } else if (transcript.toLowerCase().includes('delete file') || transcript.toLowerCase().includes('remove file') || transcript.toLowerCase().includes('remove the file') || transcript.toLowerCase().includes('remove the file')) {
-          document.getElementById('fileInput').value = ''; // Remove uploaded file
+          document.getElementById('fileInput').value = '';
           window.speechSynthesis.cancel();
           createModel("gemini-pro");
         } else {
-          document.getElementById('questionInput').value += transcript; // Append transcript to question input
+          document.getElementById('questionInput').value += transcript; 
           updateLiveTranscription(transcript);
         }
       } else {
@@ -299,23 +288,20 @@ document.getElementById('questionInput').addEventListener('input', () => {
     }
   };
 
-// Define a function to start recognition and restart it after a delay
 function startRecognition() {
   recognition.start();
   recognition.onend = function() {
-    recognition.start(); // Restart recognition when it ends
+    recognition.start(); 
   }
 }
 
-// Start recognition loop
 startRecognition();
 
-// Function to update live transcription
 function updateLiveTranscription(text) {
   liveTranscriptionElement.textContent = text;
   setTimeout(() => {
     liveTranscriptionElement.textContent = '';
-  }, 9000); // Remove live transcription after 9 seconds
+  }, 9000); 
 }
 
   function toggleRecording() {
