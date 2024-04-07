@@ -1,12 +1,34 @@
 # VoiceAid
-An Audio-Interactive Document Assistant for the Visually Impaired powered by Google's Gemini
-## Need to do
-- User Interface: Create a simple HTML form where users can upload their document. A large button with mic button to record voice. live interface to show the speech-to-text input. send button to send to Gemini API. large play button to play audio from text to speech, and the response gemini made alongside the text Gemini displayed.
-- Text Extraction: When a user uploads a document, use a library like PDF.js to extract the text from the PDF document. 
-- Text Understanding and Question Answering: Use the Gemini API to understand the content and answer any questions the user might have about the document using the speech-to-text from the user.
-- Text-to-Speech (TTS): Use the speechSynthesis interface of the Web Speech API to convert the text into audio. This will involve creating a new SpeechSynthesisUtterance instance with the text you want to speak, and passing it to the speechSynthesis.speak() method.
-- Speech-to-Text (STT): Use the webkitSpeechRecognition interface of the Web Speech API to convert spoken input into text. This will involve creating a new webkitSpeechRecognition instance, setting up event handlers for the onresult event to handle the recognized text, and calling the start() method to start the speech recognition.
+
+VoiceAid is an Audio-Interactive Document Assistant designed to assist the visually impaired in navigating documents. Powered by Google's Gemini, VoiceAid allows users to interact with documents using voice commands and provides audio responses.
+
+## Features
+
+- Supports various file formats including PDF, DOCX, PNG, JPG, and JPEG.
+- Utilizes Google's Gemini for generating AI-powered responses.
+- Provides live transcription of user commands.
+- Allows users to upload documents and ask questions via voice or text input.
+- Offers audio feedback for responses and commands.
+
+## Getting Started
+
+To use VoiceAid, you'll need an API key from Google's AI Studio. Follow these steps to get started:
+
+1. Obtain an API key from [Google's AI Studio](https://aistudio.google.com/app/apikey).
+2. Clone this repository to your local machine.
+3. Open `index.html` in your preferred web browser.
+4. Enter your API key in the provided input field.
+5. Start interacting with VoiceAid by asking questions or uploading documents.
+
+## Commands
+
+VoiceAid supports the following voice commands:
+
+- "Stop talking" or "Stop": Stops audio playback.
+- "Delete file", "Remove file", "Remove the file", or "Delete the file": Clears the uploaded document.
+
+## Contributions
+
+Contributions are welcome! If you'd like to contribute to VoiceAid, feel free to fork this repository and submit a pull request with your changes.
 
 
-### index1.html  uplaoded file is deleted after ai finishes talking, fix that error.
-### microphone stops working after a while, fix that.
