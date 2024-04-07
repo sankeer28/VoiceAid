@@ -134,17 +134,19 @@ async function handleResponse(text) {
   }
 }
 
-// Function to play audio from the response text with modified voice properties
 function playAudio(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-  
-    // Adjust pitch, rate, and volume as needed
-    utterance.pitch = 0.8;
-    utterance.rate = 0.9;
-    utterance.volume = 1;
-  
-    window.speechSynthesis.speak(utterance);
-  }
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  // Adjust pitch, rate, and volume as needed
+  utterance.pitch = 0.8;
+  utterance.rate = 0.9;
+  utterance.volume = 1;
+
+  // Specify the default voice as "Microsoft Liam Online (Natural) - English (Canada)"
+  utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.name === 'Microsoft Liam Online (Natural) - English (Canada)');
+
+  window.speechSynthesis.speak(utterance);
+}
   
 
 document.getElementById('sendButton').addEventListener('click', async () => {
@@ -327,5 +329,6 @@ function updateLiveTranscription(text) {
   }
 
 </script>
+<script src="voices.js"></script>
 </body>
 </html>
