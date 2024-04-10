@@ -13,7 +13,7 @@
       }
     }
   </script>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="../styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -21,95 +21,102 @@
   <h1>VoiceAid</h1>
   <p>Audio-Interactive Document Assistant</p>
   <p style="font-style: italic;">Valid Files: .pdf, .docx, .png, .jpg, .jpeg</p>
-  <p style="font-style: italic;">Commands: "stop talking"/"stop", "delete file"/"remove file"/"remove the file"/"delete the file"</p>
+  <p style="font-style: italic;">Commands: "stop talking"/"stop", "delete file"/"remove file" , "search youtube for ..."/"close the video"</p>
+  <p style="font-style: italic;">Use on a Chromium-based browser for best experience</p>
+   <p style="font-style: italic;">Start talking, Say Hello!</p>
 </div>
 <div id="apiKeyInputContainer">
   <input id="apiKeyInput" type="password" placeholder="Enter your API key" autocomplete="new-password" >
   <i id="togglePasswordVisibility" class="fa fa-eye-slash"></i>
 </div>
-
-<input type="file" id="fileInput">
+<input type="file" id="fileInput" ="updateLabel()">
 <input id="questionInput" type="text" placeholder="Ask your question here ">
 <div id="liveTranscription"></div>
 <button id="sendButton">Send <i class="fa fa-microphone"></i></button>
+
+<div id="videoContainerWrapper" class="video-container-wrapper" style="display: none;">
+  <div id="videoContainer" class="video-container">
+    <button id="closeVideoButton" class="close-button">&times;</button>
+    <div id="playerWrapper" class="player-wrapper"></div>
+  </div>
+</div>
+
 <div id="output"></div>
 <button id="copyButton">Copy</button>
-<a href="https://github.com/sankeer28/Gemini-Homework-Helper" target="_blank" class="github-link">GitHub</a>
+<a href="https://github.com/sankeer28/VoiceAid" target="_blank" class="github-link">GitHub</a>
 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-link">Need API Key?</a>
 
-<!-- Element to display live transcription -->
-
-
 <script type="module">
-    document.getElementById('sendButton').style.display = 'none';
-    document.getElementById('questionInput').style.display = 'none';
-  document.getElementById('copyButton').addEventListener('click', () => {
-    const outputElement = document.getElementById('output');
-    const textToCopy = outputElement.innerText;
-    const textarea = document.createElement('textarea');
-    textarea.value = textToCopy;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-    const copyButton = document.getElementById('copyButton');
-    copyButton.textContent = 'Copied';
-    setTimeout(() => {
-        copyButton.textContent = 'Copy';
-    }, 2000); 
+   // JavaScript code
+document.getElementById('sendButton').style.display = 'none';
+document.getElementById('questionInput').style.display = 'none';
+document.getElementById('copyButton').addEventListener('click', () => {
+  const outputElement = document.getElementById('output');
+  const textToCopy = outputElement.innerText;
+  const textarea = document.createElement('textarea');
+  textarea.value = textToCopy;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+  const copyButton = document.getElementById('copyButton');
+  copyButton.textContent = 'Copied';
+  setTimeout(() => {
+    copyButton.textContent = 'Copy';
+  }, 2000);
 });
 
 
+const apiKeyInput = document.getElementById('apiKeyInput');
+const togglePasswordVisibility = document.getElementById('togglePasswordVisibility');
+
+togglePasswordVisibility.addEventListener('click', () => {
+  const type = apiKeyInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  apiKeyInput.setAttribute('type', type);
+
+  togglePasswordVisibility.classList.toggle('fa-eye');
+  togglePasswordVisibility.classList.toggle('fa-eye-slash');
+});
+import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
+
+let API_KEY = localStorage.getItem('API_KEY');
+document.getElementById('apiKeyInput').value = API_KEY;
+
+let genAI;
+let model;
+
+async function createModel(modelType = "gemini-pro") {
+  API_KEY = document.getElementById('apiKeyInput').value;
+  localStorage.setItem('API_KEY', API_KEY);
+  genAI = new GoogleGenerativeAI(API_KEY);
+  model = genAI.getGenerativeModel({
+    model: modelType,
+    safetySettings: [
+      { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
+    ]
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
   const apiKeyInput = document.getElementById('apiKeyInput');
-  const togglePasswordVisibility = document.getElementById('togglePasswordVisibility');
+  apiKeyInput.placeholder = "Enter API key here";
+  toggleRecording();
+});
 
-  togglePasswordVisibility.addEventListener('click', () => {
-    const type = apiKeyInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    apiKeyInput.setAttribute('type', type);
-
-    togglePasswordVisibility.classList.toggle('fa-eye');
-    togglePasswordVisibility.classList.toggle('fa-eye-slash');
-  });
-  import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
-
-  let API_KEY = localStorage.getItem('API_KEY');
-  document.getElementById('apiKeyInput').value = API_KEY;
-
-  let genAI;
-  let model;
-
-  async function createModel(modelType = "gemini-pro") {
-    API_KEY = document.getElementById('apiKeyInput').value;
-    localStorage.setItem('API_KEY', API_KEY);
-    genAI = new GoogleGenerativeAI(API_KEY);
-    model = genAI.getGenerativeModel({ 
-      model: modelType,
-      safetySettings: [
-        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
-      ]
-    });
-  }
-  
-  window.addEventListener('DOMContentLoaded', () => {
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    apiKeyInput.placeholder = "Enter API key here";
-    toggleRecording(); // Automatically start listening on page load
-  });
-  
-  await createModel();
+await createModel();
 
 const charCountElement = document.createElement('p');
-charCountElement.textContent = 'Character Count: 0'; 
+charCountElement.textContent = 'Character Count: 0';
 const outputDiv = document.getElementById('output');
 outputDiv.parentNode.insertBefore(charCountElement, outputDiv);
 
-// Element to display live transcription
+
 const liveTranscriptionElement = document.getElementById('liveTranscription');
 
-// Function to handle the AI response and play audio
+
 async function handleResponse(text) {
   const outputElement = document.getElementById('output');
   if (text.trim() === '') {
@@ -118,215 +125,269 @@ async function handleResponse(text) {
     const converter = new showdown.Converter();
     const html = converter.makeHtml(text);
     outputElement.innerHTML = html;
-    
-    // Play audio after displaying the response
     playAudio(text);
-    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.addEventListener('end', () => {
-      // Clear the question input after speech ends
-      document.getElementById('questionInput').value = ''; 
+      document.getElementById('questionInput').value = '';
     });
     window.speechSynthesis.speak(utterance);
-
-    // Clear the question input directly after speech starts
-    document.getElementById('questionInput').value = ''; 
+    document.getElementById('questionInput').value = '';
   }
 }
 
-// Function to play audio from the response text with modified voice properties
 function playAudio(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-  
-    // Adjust pitch, rate, and volume as needed
-    utterance.pitch = 0.8;
-    utterance.rate = 0.9;
-    utterance.volume = 1;
-  
-    window.speechSynthesis.speak(utterance);
-  }
-  
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.pitch = 0.8;
+  utterance.rate = 0.9;
+  utterance.volume = 1;
+  utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.name === 'Microsoft Liam Online (Natural) - English (Canada)');
+
+  window.speechSynthesis.speak(utterance);
+}
+
 
 document.getElementById('sendButton').addEventListener('click', async () => {
-    const fileInput = document.getElementById('fileInput');
-    const prompt = document.getElementById('questionInput').value;
-    const outputElement = document.getElementById('output');
-    outputElement.innerHTML = '<p>Please wait...</p>';
-  
-    if (fileInput.files.length > 0) {
-      const file = fileInput.files[0];
-      const reader = new FileReader();
-      reader.onload = async function(evt) {
-        const arrayBuffer = evt.target.result;
-        let textContent = '';
-  
-        if (file.type === 'application/pdf') {
-          const pdfData = new Uint8Array(arrayBuffer);
-          const pdfDoc = await pdfjsLib.getDocument({data: pdfData}).promise;
-          for(let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-            const page = await pdfDoc.getPage(pageNum);
-            const text = await page.getTextContent();
-            textContent += text.items.map(item => item.str).join(' ');
-          }
-        } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-          const textContentResult = await mammoth.extractRawText({arrayBuffer: arrayBuffer});
-          textContent = textContentResult.value;
-        } else {
-          const imageParts = await Promise.all(
-            [...fileInput.files].map(fileToGenerativePart)
-          );
-          const result = await model.generateContent([prompt, ...imageParts]);
-          const response = await result.response;
-          const text = response.text();
-          outputElement.innerText = text;
-          playAudio(text); // Play audio after displaying the response
-          return;
+  const fileInput = document.getElementById('fileInput');
+  const prompt = document.getElementById('questionInput').value;
+  const outputElement = document.getElementById('output');
+  outputElement.innerHTML = '<p>Please wait...</p>';
+
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = async function(evt) {
+      const arrayBuffer = evt.target.result;
+      let textContent = '';
+
+      if (file.type === 'application/pdf') {
+        const pdfData = new Uint8Array(arrayBuffer);
+        const pdfDoc = await pdfjsLib.getDocument({ data: pdfData }).promise;
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+          const page = await pdfDoc.getPage(pageNum);
+          const text = await page.getTextContent();
+          textContent += text.items.map(item => item.str).join(' ');
         }
-  
-        console.log(textContent); // Log the extracted text to the console
-  
-        // Continue with the rest of the code to handle the AI response
-        const extractedTextCharCount = textContent.length;
-        const questionCharCount = prompt.length;
-        charCountElement.textContent = `Character count: ${extractedTextCharCount + questionCharCount} `;
-        const result = await model.generateContent(prompt + ' ' + textContent);
-        const response = await result.response;
-        const text = response.text();
-  
-        if (text.trim() === '') {
-          outputElement.innerText = 'No text input or image selected';
-        } else {
-          const converter = new showdown.Converter();
-          const html = converter.makeHtml(text);
-          outputElement.innerHTML = html;
-          playAudio(text); // Play audio after displaying the response
-        }
-        document.getElementById('questionInput').value = '';
-      };
-      reader.readAsArrayBuffer(file);
-    } else {
-      if (prompt.trim() === '') {
-        outputElement.innerText = 'Please enter a question or upload a file.';
+      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        const textContentResult = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+        textContent = textContentResult.value;
       } else {
-        const questionCharCount = prompt.length;
-        charCountElement.textContent = `Character count: ${questionCharCount}`;
-        const result = await model.generateContent(prompt);
+        const imageParts = await Promise.all(
+          [...fileInput.files].map(fileToGenerativePart)
+        );
+        const result = await model.generateContent([prompt, ...imageParts]);
         const response = await result.response;
         const text = response.text();
-        if (text.trim() === '') {
-          outputElement.innerText = 'No response found for the given question.';
-        } else {
-          const converter = new showdown.Converter();
-          const html = converter.makeHtml(text);
-          outputElement.innerHTML = html;
-          playAudio(text); // Play audio after displaying the response
-        }
+        outputElement.innerText = text;
+        playAudio(text);
+        return;
+      }
+
+      console.log(textContent);
+
+
+      const extractedTextCharCount = textContent.length;
+      const questionCharCount = prompt.length;
+      charCountElement.textContent = `Character count: ${extractedTextCharCount + questionCharCount} `;
+      const result = await model.generateContent(prompt + ' ' + textContent);
+      const response = await result.response;
+      const text = response.text();
+
+      if (text.trim() === '') {
+        outputElement.innerText = 'No input or image selected';
+      } else {
+        const converter = new showdown.Converter();
+        const html = converter.makeHtml(text);
+        outputElement.innerHTML = html;
+        playAudio(text);
+      }
+      document.getElementById('questionInput').value = '';
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    if (prompt.trim() === '') {
+      outputElement.innerText = 'Please ask a question or upload a file and ask.';
+    } else {
+      const questionCharCount = prompt.length;
+      charCountElement.textContent = `Character count: ${questionCharCount}`;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      if (text.trim() === '') {
+        outputElement.innerText = 'No response found for the given question.';
+      } else {
+        const converter = new showdown.Converter();
+        const html = converter.makeHtml(text);
+        outputElement.innerHTML = html;
+        playAudio(text);
       }
     }
-    document.getElementById('questionInput').value = '';
-  });
-  
+  }
+  document.getElementById('questionInput').value = '';
+});
+
 
 document.getElementById('questionInput').addEventListener('input', () => {
   const questionCharCount = document.getElementById('questionInput').value.length;
-  charCountElement.textContent = `Character count: ${questionCharCount}`; 
+  charCountElement.textContent = `Character count: ${questionCharCount}`;
 });
 
-  
-  document.getElementById('fileInput').addEventListener('change', async (event) => {
-    const file = event.target.files[0];
-    if (file.type.startsWith('image/')) {
-      await createModel("gemini-pro-vision"); 
-    } else {
-      await createModel("gemini-pro"); 
-    }
-  });
 
-  document.getElementById('apiKeyInput').addEventListener('input', () => {
-    createModel(model.model);
-  });
-
-  async function fileToGenerativePart(file) {
-    const base64EncodedDataPromise = new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(file);
-    });
-    return {
-      inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
-    };
-  }
-
-  let recognition;
-
-  if ('webkitSpeechRecognition' in window) {
-    recognition = new webkitSpeechRecognition();
-    recognition.continuous = true; // Keep listening continuously
-    recognition.interimResults = true;
-    recognition.onerror = function(event) {
-      console.error('Speech recognition error:', event.error);
-      recognition.start(); // Restart recognition if error occurs
-    };
+document.getElementById('fileInput').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (file.type.startsWith('image/')) {
+    await createModel("gemini-pro-vision");
   } else {
-    console.error('Speech recognition not supported');
+    await createModel("gemini-pro");
   }
-  
-  recognition.onresult = function(event) {
-    let interimTranscript = '';
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) {
-        const transcript = event.results[i][0].transcript;
-        if (transcript.toLowerCase().includes('stop talking')) {
-          window.speechSynthesis.cancel(); // Stop speaking
-          document.getElementById('fileInput').value = ''; // Remove uploaded file
-        } else if (transcript.toLowerCase().includes('delete file') || transcript.toLowerCase().includes('remove file') || transcript.toLowerCase().includes('remove the file') || transcript.toLowerCase().includes('remove the file')) {
-          document.getElementById('fileInput').value = ''; // Remove uploaded file
-          window.speechSynthesis.cancel();
-          createModel("gemini-pro");
-        } else {
-          document.getElementById('questionInput').value += transcript; // Append transcript to question input
-          // Display live transcription temporarily
-          updateLiveTranscription(transcript);
-        }
-      } else {
-        interimTranscript += event.results[i][0].transcript;
-      }
-    }
+});
 
-    if (interimTranscript === '') {
-      document.getElementById('sendButton').click();
-    }
+document.getElementById('apiKeyInput').addEventListener('input', () => {
+  createModel(model.model);
+});
+
+async function fileToGenerativePart(file) {
+  const base64EncodedDataPromise = new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.readAsDataURL(file);
+  });
+  return {
+    inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
   };
+}
 
-// Define a function to start recognition and restart it after a delay
+let recognition;
+
+if ('webkitSpeechRecognition' in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onerror = function(event) {
+    console.error('Speech recognition error:', event.error);
+    recognition.start();
+  };
+} else {
+  console.error('Speech recognition not supported');
+}
+
+recognition.onresult = function(event) {
+  let interimTranscript = '';
+  for (let i = event.resultIndex; i < event.results.length; ++i) {
+    if (event.results[i].isFinal) {
+      const transcript = event.results[i][0].transcript;
+      if (transcript.toLowerCase().includes('stop talking')) {
+        window.speechSynthesis.cancel();
+        document.getElementById('fileInput').value = '';
+      } else if (transcript.toLowerCase().includes('delete file') || transcript.toLowerCase().includes('remove file') || transcript.toLowerCase().includes('remove the file') || transcript.toLowerCase().includes('remove the file')) {
+        document.getElementById('fileInput').value = '';
+        window.speechSynthesis.cancel();
+        createModel("gemini-pro");
+      } else if (transcript.toLowerCase().startsWith('search youtube for ')) {
+        const query = transcript.toLowerCase().replace('search youtube for ', '').trim();
+        searchAndDisplayVideo(query);
+        recognition.stop();
+      } else if (transcript.toLowerCase().includes('close the video')) {
+        closeVideo();
+        recognition.start();
+      } else {
+        document.getElementById('questionInput').value += transcript;
+        updateLiveTranscription(transcript);
+      }
+    } else {
+      interimTranscript += event.results[i][0].transcript;
+    }
+  }
+
+  if (interimTranscript === '') {
+    document.getElementById('sendButton').click();
+  }
+};
+
 function startRecognition() {
   recognition.start();
   recognition.onend = function() {
-    recognition.start(); // Restart recognition when it ends
+    recognition.start();
   }
 }
 
-// Start recognition loop
 startRecognition();
 
-// Function to update live transcription
 function updateLiveTranscription(text) {
   liveTranscriptionElement.textContent = text;
   setTimeout(() => {
     liveTranscriptionElement.textContent = '';
-  }, 3000); // Remove live transcription after 3 seconds
+  }, 9000);
 }
 
-  function toggleRecording() {
-    if (recognition) {
-      if (recognition.state === 'listening') {
-        recognition.stop();
-      } else {
-        recognition.start();
-      }
-    }
+function searchAndDisplayVideo(query) {
+  const apiKey = 'AIzaSyCSiHGbC3s9vPWYARO7mzyLHlr2uHnn5jA';
+  const maxResults = 5;
+  const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${encodeURIComponent(query)}&maxResults=${maxResults}`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const videos = data.items.map(item => ({
+        id: item.id.videoId,
+        title: item.snippet.title,
+        likes: item.statistics?.likeCount || 0,
+        dislikes: item.statistics?.dislikeCount || 0
+      }));
+
+      videos.forEach(video => {
+        const totalVotes = video.likes + video.dislikes;
+        video.ratio = totalVotes > 0 ? video.likes / totalVotes : 0;
+      });
+
+      videos.sort((a, b) => b.ratio - a.ratio);
+      const bestVideo = videos[0];
+
+      const playerWrapper = document.getElementById("playerWrapper");
+if (playerWrapper) {
+  playerWrapper.innerHTML = `
+    <h2 style="color: white;">Best Video: ${bestVideo.title}</h2>
+    <iframe width="800" height="450" src="https://www.youtube.com/embed/${bestVideo.id}?autoplay=1" frameborder="0" allowfullscreen></iframe>
+  `;
+} else {
+  console.error("Player wrapper element not found.");
+}
+      
+
+      const videoContainerWrapper = document.getElementById("videoContainerWrapper");
+      videoContainerWrapper.style.display = "block"; 
+      document.body.classList.add("overlay");
+    })
+    .catch(error => {
+      console.error("An error occurred:", error);
+      alert("Failed to retrieve search results.");
+    });
+}
+
+document.getElementById('closeVideoButton').addEventListener('click', () => {
+  document.getElementById('videoContainer').style.display = 'none';
+  closeVideo();
+  const videoWrapper = document.querySelector('.video-container-wrapper');
+  if (videoWrapper) {
+    videoWrapper.parentNode.removeChild(videoWrapper); 
   }
+  document.body.classList.remove("overlay"); 
+  recognition.start();
+});
+
+
+
+
+
+function closeVideo() {
+  const videoContainer = document.getElementById("videoContainer");
+  videoContainer.style.display = "none";
+  const playerWrapper = document.getElementById("playerWrapper");
+  playerWrapper.innerHTML = ""; 
+  document.body.classList.remove("overlay"); 
+}
+
 
 </script>
+<script src="voices.js"></script>
 </body>
 </html>

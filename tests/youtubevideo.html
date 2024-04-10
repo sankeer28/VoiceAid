@@ -22,7 +22,7 @@ async function searchVideos() {
     return;
   }
 
-  const apiKey = ' '; // Replace with your YouTube Data API key
+  const apiKey = 'AIzaSyCSiHGbC3s9vPWYARO7mzyLHlr2uHnn5jA'; // Replace with your YouTube Data API key
   const maxResults = 5; // Maximum number of results to retrieve
   
   const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${encodeURIComponent(query)}&maxResults=${maxResults}`;
