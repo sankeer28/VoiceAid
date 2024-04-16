@@ -245,17 +245,18 @@ p {
   transform: translateX(-50%); 
   background-color: rgba(255, 255, 255, 0.5); 
   padding: 10px;
+  border-radius: 5px;
 }
 
 
 .video-container-wrapper {
-  display: none; /* Initially hide the video container wrapper */
+  display: none; 
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 9999; /* Ensure it's above other content */
+  z-index: 9999; 
 }
 
 
@@ -271,7 +272,7 @@ p {
 .player-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 aspect ratio */
+  padding-top: 56.25%; 
 }
 
 .player-wrapper iframe {
@@ -300,6 +301,6 @@ p {
   font-size: 24px;
   color: white;
   cursor: pointer;
-  z-index: 99999; /* Ensure it's above other content */
+  z-index: 99999; 
 }
 

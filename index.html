@@ -280,14 +280,17 @@ document.getElementById('questionInput').addEventListener('input', () => {
           updateLiveTranscription(transcript);
         }
       } else {
-        interimTranscript += event.results[i][0].transcript;
+        // Display interim transcription results
+        const interimTranscript = event.results[i][0].transcript;
+        updateLiveTranscription(interimTranscript);
       }
     }
-
+  
     if (interimTranscript === '') {
       document.getElementById('sendButton').click();
     }
   };
+  
 
 function startRecognition() {
   recognition.start();
