@@ -31,7 +31,8 @@ VoiceAid supports the following voice commands:
 ## Contributions
 
 Contributions are welcome! If you'd like to contribute to VoiceAid, feel free to fork this repository and submit a pull request with your changes.
-## next steps:
-- when I say stop talking it should display the text on the display
-- chat history implementation for same file, once file is deleted chat history should be deleted
+
+## Demo
+https://github.com/sankeer28/VoiceAid/assets/112449287/93aede80-3dc2-41db-bed3-aaa1d25d87b9
+
 
