@@ -295,13 +295,13 @@ document.getElementById('questionInput').addEventListener('input', () => {
           updateLiveTranscription(transcript);
         }
       } else {
-        // Display interim transcription results
-        const interimTranscript = event.results[i][0].transcript;
-        updateLiveTranscription(interimTranscript);
+        interimTranscript += event.results[i][0].transcript;
       }
     }
   
-    if (interimTranscript === '') {
+    updateLiveTranscription(interimTranscript);
+  
+    if (interimTranscript.trim() === '') {
       document.getElementById('sendButton').click();
     }
   };
