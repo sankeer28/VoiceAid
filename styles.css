@@ -10,6 +10,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100vh;
+  font-size: 1.2em;
 }
 
 input, button {
@@ -82,7 +83,7 @@ input, button {
   color: #000000;
   font-weight: bold;
   align-items: center;
-  font-size: 1.3em;
+  font-size: 1.6em;
 }
 
 #output::-webkit-scrollbar {
@@ -105,15 +106,15 @@ input, button {
 }
 
 
-h1 {
+#title {
   text-align: center;
-  font-size: 2.5em;
-  background: linear-gradient(90deg, #bd93f9, #ff79c6, #ff5555, #ffb86c, #f1fa8c);
-  background-size: 200% auto;
+  font-size: 2.8em;
+  background: linear-gradient(90deg, #bd93f9, #ff79c6, #ff5555, #ffb86c, #f1fa8c,#ffb86c,#ff5555,#ff79c6,#bd93f9);
+  background-size: 300% auto;
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-  animation: gradient 5s ease infinite;
+  animation: gradient 10s ease infinite; 
   margin-bottom: 20px !important;
   position: relative;
   z-index: 1;
@@ -121,12 +122,13 @@ h1 {
 
 @keyframes gradient {
   0% {
-      background-position: 0%;
+    background-position: 0% 50%;
   }
   100% {
-      background-position: 100%;
+    background-position: 100% 50%;
   }
 }
+
 
 p {
   color: #000000;
@@ -217,13 +219,15 @@ p {
 
 
 #copyButton {
-  padding: 20px 30px;
+  padding: 10px 20px;
   background-color: #6c9cb5;
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
 #copyButton:hover {

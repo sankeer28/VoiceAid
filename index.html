@@ -18,12 +18,10 @@
 </head>
 <body>
 <div class="title">
-  <h1>VoiceAid</h1>
-  <p>Audio-Interactive Document Assistant</p>
+  <h1 id="title">VoiceAid</h1>
+  <h3>Audio-Interactive Document Assistant</h3>
   <p style="font-style: italic;">Valid Files: .pdf, .docx, .png, .jpg, .jpeg</p>
-  <p style="font-style: italic;">Commands: "stop talking"/"stop", "delete file"/"remove file"/"remove the file"/"delete the file"</p>
-  <p style="font-style: italic;">Use on a Chromium-based browser for best experience</p>
-   <p style="font-style: italic;">Start talking, Say Hello!</p>
+  <p style="font-style: italic;">Commands: "stop talking"/"stop", "delete file"/"remove file"</p>
 </div>
 <div id="apiKeyInputContainer">
   <input id="apiKeyInput" type="password" placeholder="Enter your API key" autocomplete="new-password" >
@@ -39,7 +37,24 @@
 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="api-link">Need API Key?</a>
 
 
+<script type="text/javascript">
+  window.onload = function() {
+    alert("Do not discuss any personal information or upload classified documents. The AI is actively being trained through conversations");
+  }
+function isChromiumBased() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  return userAgent.includes("chrome") || userAgent.includes("chromium") || userAgent.includes("edge");
+}
 
+function showAlertIfNotChromium() {
+  if (!isChromiumBased()) {
+      alert("This website is optimized for Chromium-based browsers. Not all features may work. Please use a Chromium-based browser for the best experience.");
+  }
+}
+
+window.addEventListener('DOMContentLoaded', showAlertIfNotChromium);
+
+</script>
 <script type="module">
     document.getElementById('sendButton').style.display = 'none';
     document.getElementById('questionInput').style.display = 'none';
