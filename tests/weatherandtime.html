@@ -3,14 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Current Time and Location</title>
+<title>Time and Location</title>
+<!-- Include Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<!-- Include Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
 
-<h1>Current Time and Location</h1>
+<h1>Time and Location</h1>
 
 <p id="currentTime"></p>
-<p id="approxLocation"></p>
+<pre id="approxLocation"></pre>
+
+<!-- Map container -->
+<div id="mapid" style="height: 400px;"></div>
 
 <script>
 window.onload = function() {
@@ -25,8 +33,49 @@ window.onload = function() {
     fetch('https://ipapi.co/json/')
         .then(response => response.json())
         .then(data => {
-            const approximateLocation = `${data.city}, ${data.region}, ${data.country_name}`;
-            document.getElementById("approxLocation").textContent = "Approximate Location: " + approximateLocation;
+            const approximateLocation = {
+                "IP": data.ip,
+                "Network": data.network,
+                "Version": data.version,
+                "City": data.city,
+                "Region": data.region,
+                "Region Code": data.region_code,
+                "Country": data.country_name,
+                "Country Code": data.country_code,
+                "Country Code ISO3": data.country_code_iso3,
+                "Country Capital": data.country_capital,
+                "Country TLD": data.country_tld,
+                "Continent Code": data.continent_code,
+                "In EU": data.in_eu,
+                "Postal": data.postal,
+                "Latitude": data.latitude,
+                "Longitude": data.longitude,
+                "Timezone": data.timezone,
+                "UTC Offset": data.utc_offset,
+                "Country Calling Code": data.country_calling_code,
+                "Currency": data.currency,
+                "Currency Name": data.currency_name,
+                "Languages": data.languages,
+                "Country Area": data.country_area,
+                "Country Population": data.country_population,
+                "ASN": data.asn,
+                "Organization": data.org
+            };
+
+            var map = L.map('mapid').setView([approximateLocation.Latitude, approximateLocation.Longitude], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            L.marker([approximateLocation.Latitude, approximateLocation.Longitude]).addTo(map)
+                .bindPopup('Approximate Location: ' + approximateLocation.City + ', ' + approximateLocation.Country)
+                .openPopup();
+
+            let formattedLocation = "Approximate Location:\n";
+            for (const [key, value] of Object.entries(approximateLocation)) {
+                formattedLocation += `${key}: ${value}\n`;
+            }
+            document.getElementById("approxLocation").textContent = formattedLocation;
         })
         .catch(error => {
             console.error('Error:', error);
