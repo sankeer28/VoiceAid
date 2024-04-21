@@ -1,6 +1,7 @@
 if ('speechSynthesis' in window) {
     var synth = window.speechSynthesis;
     var voices = [];
+    var chromeBased = /Chrome/.test(navigator.userAgent);
     var microsoftLiamOnlineAvailable = false;
 
     function populateVoiceList() {
@@ -36,7 +37,7 @@ if ('speechSynthesis' in window) {
         var selectedVoice = voiceSelect.selectedOptions[0].getAttribute('data-name');
 
         var utterance = new SpeechSynthesisUtterance(textInput);
-        if (microsoftLiamOnlineAvailable) {
+        if (microsoftLiamOnlineAvailable && chromeBased) {
             voices.forEach(function(voice) {
                 if (voice.name === selectedVoice) {
                     utterance.voice = voice;
