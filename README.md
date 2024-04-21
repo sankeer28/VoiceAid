@@ -1,4 +1,4 @@
-# [VoiceAid](https://voice-aid.vercel.app/)
+# [VoiceAid](https://voiceaid.vercel.app/)
 
 VoiceAid is an Audio-Interactive Document Assistant designed to assist the visually impaired in navigating documents. Powered by Google's Gemini, VoiceAid allows users to interact with documents using voice commands and provides audio responses.
 <p align="center">
