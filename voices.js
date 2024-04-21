@@ -1,7 +1,7 @@
 if ('speechSynthesis' in window) {
     var synth = window.speechSynthesis;
     var voices = [];
-    var microsoftLiamOnlineAvailable = false;
+    var defaultVoice = null; 
 
     function populateVoiceList() {
         voices = synth.getVoices();
@@ -17,7 +17,7 @@ if ('speechSynthesis' in window) {
                 option.setAttribute('data-name', voice.name);
                 if (voice.name === 'Microsoft Liam Online (Natural) - English (Canada)') {
                     option.selected = true; 
-                    microsoftLiamOnlineAvailable = true;
+                    defaultVoice = voice; 
                 }
                 voiceSelect.appendChild(option);
             }
@@ -37,14 +37,17 @@ if ('speechSynthesis' in window) {
 
         var utterance = new SpeechSynthesisUtterance(textInput);
 
-        if (microsoftLiamOnlineAvailable) {
-            utterance.voice = voices.find(function(voice) {
-                return voice.name === selectedVoice;
+        if (/Chrome/.test(navigator.userAgent)) {
+            var microsoftLiamOnlineAvailable = voices.some(function(voice) {
+                return voice.name === 'Microsoft Liam Online (Natural) - English (Canada)';
             });
+            if (microsoftLiamOnlineAvailable) {
+                utterance.voice = voices.find(function(voice) {
+                    return voice.name === selectedVoice;
+                });
+            }
         } else {
-            utterance.voice = synth.getVoices().find(function(voice) {
-                return voice.default;
-            });
+            utterance.voice = defaultVoice; 
         }
 
         synth.speak(utterance);
