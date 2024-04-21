@@ -1,7 +1,6 @@
 if ('speechSynthesis' in window) {
     var synth = window.speechSynthesis;
     var voices = [];
-    var chromeBased = /Chrome/.test(navigator.userAgent);
     var microsoftLiamOnlineAvailable = false;
 
     function populateVoiceList() {
@@ -37,14 +36,15 @@ if ('speechSynthesis' in window) {
         var selectedVoice = voiceSelect.selectedOptions[0].getAttribute('data-name');
 
         var utterance = new SpeechSynthesisUtterance(textInput);
-        if (microsoftLiamOnlineAvailable && chromeBased) {
-            voices.forEach(function(voice) {
-                if (voice.name === selectedVoice) {
-                    utterance.voice = voice;
-                }
+
+        if (microsoftLiamOnlineAvailable) {
+            utterance.voice = voices.find(function(voice) {
+                return voice.name === selectedVoice;
             });
         } else {
-            utterance.voice = synth.getVoices().find(voice => voice.default);
+            utterance.voice = synth.getVoices().find(function(voice) {
+                return voice.default;
+            });
         }
 
         synth.speak(utterance);
