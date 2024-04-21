@@ -15,5 +15,17 @@ function showAlertIfNotChromium() {
 window.addEventListener('DOMContentLoaded', showAlertIfNotChromium);
 
 function toggleTheme() {
-    document.body.classList.toggle('dark-theme');
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeToggleIcon = document.querySelector('#themeToggle i');
+  
+    body.classList.toggle('dark-theme');
+  
+    if (body.classList.contains('dark-theme')) {
+      themeToggleIcon.className = 'fa fa-sun';
+      themeToggle.style.backgroundColor = '#1d1d1d#bcc2c6'; 
+    } else {
+      themeToggleIcon.className = 'fa fa-moon';
+      themeToggle.style.backgroundColor = '1d1d1d'; r
+    }
   }
