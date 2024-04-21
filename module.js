@@ -94,11 +94,15 @@ function playAudio(text) {
 
   if ('speechSynthesis' in window) {
       if (window.speechSynthesis.getVoices().length) {
-          const selectedVoice = window.speechSynthesis.getVoices().find(voice => voice.name === 'Microsoft Liam Online (Natural) - English (Canada)');
+          let selectedVoice;
+          if (/Chrome/.test(navigator.userAgent)) {
+              selectedVoice = window.speechSynthesis.getVoices().find(voice => voice.name === 'Microsoft Liam Online (Natural) - English (Canada)');
+          } else { 
+              selectedVoice = window.speechSynthesis.getVoices().find(voice => voice.default);
+          }
+
           if (selectedVoice) {
               utterance.voice = selectedVoice;
-          } else {
-              utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.default);
           }
       }
       window.speechSynthesis.speak(utterance);
