@@ -1,5 +1,5 @@
 window.onload = function() {
-    alert("Do not discuss any personal information or upload classified documents. The AI is actively being trained through conversations");
+    alert("Do not discuss any personal information or upload classified documents. The AI is actively being trained through conversations ❕❕❕❕❕❕");
   }
 function isChromiumBased() {
   const userAgent = navigator.userAgent.toLowerCase();
