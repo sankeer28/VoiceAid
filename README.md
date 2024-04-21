@@ -14,7 +14,8 @@ VoiceAid is an Audio-Interactive Document Assistant designed to assist the visua
 - Provides live transcription of user commands.
 - Allows users to upload documents and ask questions via voice or text input.
 - Offers audio feedback for responses.
-- uses Chromium's built-in TTS: Microsoft Liam Online (Natural) - English (Canada) 
+- uses Chromium's built-in TTS: Microsoft Liam Online (Natural) - English (Canada)
+- Dark / Light themes
 ## Getting Started
 
 To use VoiceAid, you'll need an API key from Google's AI Studio. Follow these steps to get started:
