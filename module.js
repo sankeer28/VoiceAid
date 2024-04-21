@@ -91,26 +91,10 @@ function playAudio(text) {
   utterance.pitch = 0.8;
   utterance.rate = 0.9;
   utterance.volume = 1;
+  utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.name === 'Microsoft Liam Online (Natural) - English (Canada)');
 
-  if ('speechSynthesis' in window) {
-      if (window.speechSynthesis.getVoices().length) {
-          let selectedVoice;
-          if (/Chrome/.test(navigator.userAgent)) {
-              selectedVoice = window.speechSynthesis.getVoices().find(voice => voice.name === 'Microsoft Liam Online (Natural) - English (Canada)');
-          } else { 
-              selectedVoice = window.speechSynthesis.getVoices().find(voice => voice.default);
-          }
-
-          if (selectedVoice) {
-              utterance.voice = selectedVoice;
-          }
-      }
-      window.speechSynthesis.speak(utterance);
-  } else {
-      console.log('Speech synthesis is not supported in this browser.');
-  }
+  window.speechSynthesis.speak(utterance);
 }
-
   
 
 document.getElementById('sendButton').addEventListener('click', async () => {
