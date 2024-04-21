@@ -24,13 +24,12 @@ if ('speechSynthesis' in window) {
         });
     }
 
-    populateVoiceList();
-
     if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = populateVoiceList;
     }
 
     document.getElementById('speakButton').addEventListener('click', function() {
+        populateVoiceList();
         var textInput = document.getElementById('textInput').value;
         var voiceSelect = document.getElementById('voiceSelect');
         var selectedVoice = voiceSelect.selectedOptions[0].getAttribute('data-name');
