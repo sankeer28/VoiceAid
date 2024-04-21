@@ -23,9 +23,9 @@ function toggleTheme() {
   
     if (body.classList.contains('dark-theme')) {
       themeToggleIcon.className = 'fa fa-sun';
-      themeToggle.style.backgroundColor = '#1d1d1d#bcc2c6'; 
+      themeToggle.style.backgroundColor = '#bcc2c6'; 
     } else {
       themeToggleIcon.className = 'fa fa-moon';
-      themeToggle.style.backgroundColor = '1d1d1d'; 
+      themeToggle.style.backgroundColor = '#1d1d1d'; 
     }
   }
