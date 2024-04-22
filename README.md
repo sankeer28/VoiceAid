@@ -17,7 +17,7 @@ VoiceAid is an Audio-Interactive Document Assistant designed to assist the visua
 - Offers audio feedback for responses.
 - uses Chromium's built-in TTS: Microsoft Liam Online (Natural) - English (Canada)
 - Dark / Light themes
-# Supported Devices
+## Supported Devices
 
 | Devices | Voice Input | Voice Output | Text Output | File Upload |
 |---------|-------------|--------------|--------------|--------------|
