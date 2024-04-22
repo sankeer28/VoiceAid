@@ -1,3 +1,4 @@
+
 # [VoiceAid](https://voiceaid.vercel.app/)
 
 VoiceAid is an Audio-Interactive Document Assistant designed to assist the visually impaired in navigating documents. Powered by Google's Gemini, VoiceAid allows users to interact with documents using voice commands and provides audio responses.
@@ -16,6 +17,16 @@ VoiceAid is an Audio-Interactive Document Assistant designed to assist the visua
 - Offers audio feedback for responses.
 - uses Chromium's built-in TTS: Microsoft Liam Online (Natural) - English (Canada)
 - Dark / Light themes
+# Supported Devices
+
+| Devices | Voice Input | Voice Output | Text Output | File Upload |
+|---------|-------------|--------------|--------------|--------------|
+| iOS  | ✅  | ❌ |✅ |✅ |
+| Android | ✅ | ✅ |✅ |✅ |
+| Windows 10/11 | ✅ | ✅ |✅ |✅ |
+| Mac | ✅ | ✅ |✅ |✅ |
+
+  
 ## Getting Started
 
 To use VoiceAid, you'll need an API key from Google's AI Studio. Follow these steps to get started:
