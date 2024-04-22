@@ -8,7 +8,7 @@ function isChromiumBased() {
 
 function showAlertIfNotChromium() {
   if (!isChromiumBased()) {
-      alert("This website is optimized for Chromium-based browsers. Not all features may work. Please use a Chromium-based browser for the best experience.");
+      alert("This website is optimized for Chromium-based browsers. Not all features may work. Please use a Chromium-based browser on a Desktop/PC for the best experience.");
   }
 }
 
