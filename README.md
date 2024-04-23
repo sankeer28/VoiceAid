@@ -36,8 +36,9 @@ To use VoiceAid, you'll need an API key from Google's AI Studio. Follow these st
 1. Obtain an API key from [Google's AI Studio](https://aistudio.google.com/app/apikey).
 2. Clone this repository to your local machine.
 3. Open `index.html` in your preferred web browser.
-4. Enter your API key in the provided input field.
-5. Start interacting with VoiceAid by asking questions or uploading documents.
+4. Enable microphone access.
+5. Enter your API key in the provided input field.
+6. Start interacting with VoiceAid by asking questions or uploading documents.
 
 ## Commands
 
