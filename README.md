@@ -22,10 +22,12 @@ VoiceAid is an Audio-Interactive Document Assistant designed to assist the visua
 | Devices | Voice Input | Voice Output | Text Output | File Upload |
 |---------|-------------|--------------|--------------|--------------|
 | iOS  | ✅  | ❌ |✅ |✅ |
-| Android | ✅ | ✅ |✅ |✅ |
+| Android | ⚠️ | ⚠️ |✅ |✅ |
 | Windows 10/11 | ✅ | ✅ |✅ |✅ |
 | Mac | ✅ | ✅ |✅ |✅ |
-
+- ⚠️: May or May not work properly, unstable, bugs
+- ❌: Fully does not work
+- ✅: Fully works
   
 ## Getting Started
 
