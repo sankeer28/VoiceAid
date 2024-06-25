@@ -186,7 +186,7 @@ document.getElementById('questionInput').addEventListener('input', () => {
   document.getElementById('fileInput').addEventListener('change', async (event) => {
     const file = event.target.files[0];
     if (file.type.startsWith('image/')) {
-      await createModel("gemini-pro-vision"); 
+      await createModel("gemini-1.5-flash"); 
     } else {
       await createModel("gemini-pro"); 
     }
